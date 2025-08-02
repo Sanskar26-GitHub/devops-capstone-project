@@ -46,12 +46,17 @@ class TestAccountService(TestCase):
         """Runs before each test"""
         db.session.query(Account).delete()  # clean up the last tests
         db.session.commit()
-
         self.client = app.test_client()
 
     def tearDown(self):
         """Runs once after each test case"""
         db.session.remove()
+
+    def test_cors_headers(self):
+        """It should have CORS headers"""
+        response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers.get("Access-Control-Allow-Origin"), "*")
 
     ######################################################################
     #  H E L P E R   M E T H O D S
